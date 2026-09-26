@@ -1,0 +1,142 @@
+{
+  "schema_version": "skill-version-coupling-manifest/v1",
+  "skill_name": "cs-ai-coach",
+  "current_generation": "cs-ai-coach-v1.0.0",
+  "historical_generations": [],
+  "generation_tokens": [
+    {
+      "token": "cs-ai-coach/v1",
+      "generation": "shared"
+    },
+    {
+      "token": "skill-terminology-registry/v1",
+      "generation": "shared"
+    },
+    {
+      "token": "skill-version-coupling-manifest/v1",
+      "generation": "shared"
+    },
+    {
+      "token": "terminology-baseline/v1",
+      "generation": "shared"
+    },
+    {
+      "token": "timing/v1",
+      "generation": "shared"
+    }
+  ],
+  "entrypoints": [
+    {
+      "id": "entry-0",
+      "path": "SKILL.md",
+      "generation": "cs-ai-coach-v1.0.0",
+      "kind": "instruction",
+      "source": "current"
+    },
+    {
+      "id": "entry-1",
+      "path": "scripts/validate_terminology.py",
+      "generation": "cs-ai-coach-v1.0.0",
+      "kind": "validator",
+      "source": "current"
+    },
+    {
+      "id": "entry-2",
+      "path": "scripts/observer_run.py",
+      "generation": "cs-ai-coach-v1.0.0",
+      "kind": "runner",
+      "source": "current"
+    },
+    {
+      "id": "entry-3",
+      "path": "references/terminology-registry.json",
+      "generation": "cs-ai-coach-v1.0.0",
+      "kind": "schema",
+      "source": "current"
+    }
+  ],
+  "components": [
+    {
+      "path": "SKILL.md",
+      "classification": "initial",
+      "rationale": "Skill instructions, profiles, state machine, and the Teacher harness practice boundary."
+    },
+    {
+      "path": "agents/openai.yaml",
+      "classification": "initial",
+      "rationale": "Agent interface metadata and default prompt."
+    },
+    {
+      "path": "references/attempt-graph.md",
+      "classification": "initial",
+      "rationale": "Attempt graph vocabularies, links, history, and projections of the Teacher harness practice mode."
+    },
+    {
+      "path": "references/harness-contract.md",
+      "classification": "initial",
+      "rationale": "Practice-mode interfaces and data boundary as implemented in teacher/scripts/th/coach.py."
+    },
+    {
+      "path": "references/observer-data-dictionary.md",
+      "classification": "initial",
+      "rationale": "Observer phase and field dictionary."
+    },
+    {
+      "path": "references/observer-phases.json",
+      "classification": "initial",
+      "rationale": "Machine-readable observer phase catalog."
+    },
+    {
+      "path": "references/operations.md",
+      "classification": "initial",
+      "rationale": "Launch, diagnosis, recovery, calculation routing, and validation."
+    },
+    {
+      "path": "references/security-model.md",
+      "classification": "initial",
+      "rationale": "Guarantee boundary, threats, trust boundaries, and failure behavior."
+    },
+    {
+      "path": "references/terminology-registry.json",
+      "classification": "initial",
+      "rationale": "Canonical terminology registry."
+    },
+    {
+      "path": "references/terminology.md",
+      "classification": "initial",
+      "rationale": "Normative canonical terminology."
+    },
+    {
+      "path": "references/training-policy.md",
+      "classification": "initial",
+      "rationale": "Ordinary-chat states and feedback rules and the Teacher harness practice policy."
+    },
+    {
+      "path": "references/version-coupling-manifest.json",
+      "classification": "initial",
+      "rationale": "Version coupling of Skill components."
+    },
+    {
+      "path": "scripts/observer_run.py",
+      "classification": "initial",
+      "rationale": "Python observer wrapper."
+    },
+    {
+      "path": "scripts/tests/test_observer_run.py",
+      "classification": "initial",
+      "rationale": "Observer wrapper tests."
+    },
+    {
+      "path": "scripts/tests/test_validate_terminology.py",
+      "classification": "initial",
+      "rationale": "Terminology validator, manifest, observer catalog, and harness-agreement tests."
+    },
+    {
+      "path": "scripts/validate_terminology.py",
+      "classification": "initial",
+      "rationale": "Terminology validator."
+    }
+  ],
+  "edges": [],
+  "changed_boundary_classes": []
+}

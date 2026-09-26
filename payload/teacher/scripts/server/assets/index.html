@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --ink: #1c2024; --muted: #6a7280;
+    --line: #e2e5ea; --accent: #2f6f4f; --warn: #9a5b00; --bad: #9c2b2b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 14px/1.65 -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  }
+  header {
+    padding: 20px 28px; background: var(--panel); border-bottom: 1px solid var(--line);
+  }
+  h1 { margin: 0 0 4px; font-size: 17px; letter-spacing: .01em; }
+  .sub { color: var(--muted); font-size: 12.5px; }
+  main { padding: 22px 28px 60px; max-width: 1080px; }
+  section { margin-bottom: 22px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+  .kv { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+  .kv span:first-child { color: var(--muted); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  pre {
+    background: #fbfbfc; border: 1px solid var(--line); border-radius: 6px;
+    padding: 12px 14px; overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; }
+  .chip { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 11.5px; border: 1px solid var(--line); }
+  .ok { color: var(--accent); border-color: #bcd9c8; background: #f0f7f2; }
+  .warn { color: var(--warn); border-color: #ecd6b0; background: #fdf6ea; }
+  .bad { color: var(--bad); border-color: #e6c3c3; background: #fbf1f1; }
+  .note { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  .render { border-left: 3px solid var(--accent); padding-left: 12px; }
+  textarea {
+    width: 100%; margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line);
+    border-radius: 6px; font: inherit; resize: vertical; background: #fbfbfc; color: var(--ink);
+  }
+  .row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+  button {
+    padding: 7px 18px; border: 1px solid #bcd9c8; border-radius: 6px; cursor: pointer;
+    background: #f0f7f2; color: var(--accent); font: inherit;
+  }
+  button:disabled { opacity: .5; cursor: default; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Teacher</h1>
+  <div class="sub">
+    页面上的文字只来自确定性渲染器。回答里的结论与要点由模型撰写，只有通过答案门检查后才会放进带标注的槽位；
+    练习模式（在输入框写 “/coach 题目” 开始）下，页面上不出现任何模型撰写的文字。提交与命令行走同一套门禁。
+  </div>
+</header>
+<main>
+  <section>
+    <h2>提交一次工作</h2>
+    <div class="card">
+      <div class="note">
+        你在这里写的东西会由 harness 接管：它构造有界上下文、调用模型、校验结构、运行守卫、
+        决定是否执行请求的操作，最后由确定性渲染器生成下面这段文字。
+        <strong>模型没有工具、没有路径、没有命令，也不能决定自己何时被调用。</strong>
+      </div>
+      <textarea id="input" rows="4" placeholder="描述你想推进的问题，以及你已经知道的依据"></textarea>
+      <div class="row">
+        <button id="submit">提交</button>
+        <span class="note" id="submit-note"></span>
+      </div>
+      <pre class="render" id="turn">尚未提交。</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>状态</h2>
+    <div class="grid" id="heads"></div>
+  </section>
+
+  <section>
+    <h2>仍未闭合的义务</h2>
+    <div class="card">
+      <pre class="render" id="obligations">载入中…</pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>结论</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>标题</th><th>评审</th><th>效果</th><th>等级</th><th>强度</th><th>不能推出</th></tr>
+        </thead>
+        <tbody id="claims"></tbody>
+      </table>
+      <div class="note" id="claims-note"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>路线尝试</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>attempt</th><th>route</th><th>状态</th><th>结果</th></tr></thead>
+        <tbody id="attempts"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>哈希链</h2>
+    <div class="grid" id="chain"></div>
+  </section>
+</main>
+
+<script>
+// The token arrives in the URL fragment, which a browser never sends to the
+// server. It is read into memory and the fragment is removed immediately, so it
+// does not linger in the address bar or in a bookmark.
+const fragment = new URLSearchParams(location.hash.slice(1));
+const token = fragment.get("token");
+history.replaceState(null, "", location.pathname);
+
+async function api(path) {
+  const response = await fetch(path, { headers: { "X-Teacher-Harness-Token": token } });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+}
+
+function chip(text, cls) {
+  return `<span class="chip ${cls}">${text}</span>`;
+}
+
+function effectClass(effect) {
+  return effect === "current" ? "ok" : effect === "needs_review" ? "warn" : "bad";
+}
+
+function reviewClass(state) {
+  return state === "accepted" ? "ok" : state === "unreviewed" ? "warn" : "bad";
+}
+
+// The submit path hands text to the harness and displays exactly what comes
+// back. The page never composes an answer, and it has nothing to compose from:
+// the response carries renderer output and closed codes only.
+document.getElementById("submit").addEventListener("click", async () => {
+  const text = document.getElementById("input").value;
+  const note = document.getElementById("submit-note");
+  const output = document.getElementById("turn");
+  if (!text.trim()) { note.textContent = "请先写点内容。"; return; }
+  note.textContent = "提交中…";
+  try {
+    const response = await fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Teacher-Harness-Token": token },
+      body: JSON.stringify({ text })
+    });
+    const body = await response.json();
+    output.textContent = body.visible || JSON.stringify(body, null, 2);
+    note.textContent = body.status === "ok"
+      ? `已提交（修订 ${String(body.revision).slice(0, 12)}…）`
+      : `未通过：${body.code || body.error}`;
+  } catch (error) {
+    note.textContent = `提交失败：${error.message}`;
+  }
+});
+
+(async function main() {
+  try {
+    const status = await api("/api/status");
+
+    document.getElementById("heads").innerHTML = Object.entries(status.heads)
+      .map(([name, revision]) => `
+        <div class="card">
+          <div class="kv"><span>${name} head</span><code>${revision.slice(0, 20)}…</code></div>
+          <div class="kv"><span>链条长度</span><span>${status.chain[name].length}</span></div>
+          <div class="kv"><span>问题</span><span>${status.chain[name].problems.length || "无"}</span></div>
+        </div>`).join("");
+
+    document.getElementById("claims").innerHTML = status.claims.length
+      ? status.claims.map(c => `
+          <tr>
+            <td>${c.title}</td>
+            <td>${chip(c.review_state, reviewClass(c.review_state))}</td>
+            <td>${chip(c.effect, effectClass(c.effect))}</td>
+            <td><code>${c.grade || "—"}</code></td>
+            <td><code>${c.strength || "—"}</code></td>
+            <td>${(c.cannot_imply || []).map(x => `<div>${x}</div>`).join("") || "—"}</td>
+          </tr>`).join("")
+      : `<tr><td colspan="6">还没有任何结论。</td></tr>`;
+
+    document.getElementById("claims-note").textContent =
+      "效果是由评审与依赖闭包推导出来的，不能直接赋值：因此继续工作本身不会把结论升级。";
+
+    document.getElementById("attempts").innerHTML = status.attempts.length
+      ? status.attempts.map(a => `
+          <tr><td><code>${a.attempt_id.slice(0, 18)}…</code></td>
+          <td><code>${a.route_id}</code></td>
+          <td>${chip(a.status, a.status === "closed" ? "ok" : "warn")}</td>
+          <td><code>${a.outcome || "—"}</code></td></tr>`).join("")
+      : `<tr><td colspan="4">还没有开启窗口。</td></tr>`;
+
+    document.getElementById("chain").innerHTML = Object.entries(status.chain)
+      .map(([name, chain]) => `
+        <div class="card">
+          <div class="kv"><span>${name}</span><span>${chain.length} 个修订</span></div>
+          <div class="note">每个修订都提交到它的父修订、操作与请求摘要。</div>
+        </div>`).join("");
+
+    const obligations = await api("/api/obligations");
+    document.getElementById("obligations").textContent = obligations.rendered;
+  } catch (error) {
+    document.getElementById("obligations").textContent = `无法载入：${error.message}`;
+  }
+})();
+</script>
+</body>
+</html>

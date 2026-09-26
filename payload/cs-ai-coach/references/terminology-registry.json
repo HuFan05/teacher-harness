@@ -1,0 +1,57 @@
+{
+  "schema_version": "skill-terminology-registry/v1",
+  "skill_id": "personal:cs-ai-coach",
+  "terms": [
+    {
+      "canonical_id": "coaching_profile",
+      "display_name_zh": "辅导模式档案",
+      "definition_ref": "references/terminology.md#coaching_profile",
+      "semantic_layer": "skill_workflow",
+      "authority_class": "skill_owned_canonical_concept",
+      "constitutive_fields": [
+        "profile_id",
+        "disclosure_policy",
+        "allowed_assistance",
+        "stop_conditions"
+      ],
+      "aliases": [],
+      "deprecated_aliases": [],
+      "reserved_conflicts": [
+        "claim truth status"
+      ],
+      "introduced_in": "terminology-baseline/v1",
+      "change_policy": "semantic_change_requires_versioned_migration",
+      "visibility": "local",
+      "relations": [],
+      "history": [
+        "terminology-baseline/v1: initial canonical definition"
+      ]
+    },
+    {
+      "canonical_id": "attempt_graph",
+      "display_name_zh": "学员尝试图",
+      "definition_ref": "references/terminology.md#attempt_graph",
+      "semantic_layer": "skill_workflow",
+      "authority_class": "skill_owned_canonical_concept",
+      "constitutive_fields": [
+        "nodes",
+        "edges",
+        "origins",
+        "verdicts",
+        "recovery_head"
+      ],
+      "aliases": [],
+      "deprecated_aliases": [],
+      "reserved_conflicts": [
+        "complete correctness argument of a solved problem"
+      ],
+      "introduced_in": "terminology-baseline/v1",
+      "change_policy": "semantic_change_requires_versioned_migration",
+      "visibility": "local",
+      "relations": [],
+      "history": [
+        "terminology-baseline/v1: initial canonical definition"
+      ]
+    }
+  ]
+}
